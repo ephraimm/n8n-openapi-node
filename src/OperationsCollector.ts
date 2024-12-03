@@ -131,9 +131,15 @@ export class BaseOperationsCollector implements OpenAPIVisitor {
     }
 
     protected parseOperation(operation: OpenAPIV3.OperationObject, context: OperationContext) {
-        const method = context.method
+        const method = context.method;
         const uri = context.pattern;
-        const parser = this.operationParser
+        const parser = this.operationParser;
+        
+        // Determine if this is a multipart request
+        const isMultipart = operation.requestBody && 
+            'content' in operation.requestBody &&
+            'multipart/form-data' in operation.requestBody.content;
+
         const option = {
             name: parser.name(operation, context),
             value: parser.value(operation, context),
@@ -143,11 +149,14 @@ export class BaseOperationsCollector implements OpenAPIVisitor {
                 request: {
                     method: method.toUpperCase(),
                     url: `=${replacePathVarsToParameter(uri)}`,
+                    headers: isMultipart ? {
+                        'Content-Type': 'multipart/form-data',
+                    } : undefined,
                 },
             },
         };
-        const fields = this.parseFields(operation, context);
 
+        const fields = this.parseFields(operation, context);
 
         return {
             option: option,

@@ -156,11 +156,19 @@ export class N8NINodeProperties {
             return [];
         }
         body = this.refResolver.resolve<OpenAPIV3.RequestBodyObject>(body)
+        
+        // Try multipart/form-data first, then fall back to application/json
+        const multipartContent = body.content?.['multipart/form-data'];
+        if (multipartContent) {
+            return this.fromMultipartFormData(multipartContent);
+        }
+
         const regexp = /application\/json.*/
         const content = findKey(body.content, regexp)
         if (!content) {
-            throw new Error(`No '${regexp}' content found`);
+            throw new Error(`No '${regexp}' or multipart/form-data content found`);
         }
+
         const requestBodySchema = content.schema!!;
         const schema = this.refResolver.resolve<OpenAPIV3.SchemaObject>(requestBodySchema)
         if (!schema.properties && schema.type != 'object' && schema.type != 'array') {
@@ -211,6 +219,57 @@ export class N8NINodeProperties {
             }
             fields.push(field);
         }
+        return fields;
+    }
+
+    private fromMultipartFormData(content: OpenAPIV3.MediaTypeObject): INodeProperties[] {
+        const schema = this.refResolver.resolve<OpenAPIV3.SchemaObject>(content.schema);
+        if (!schema.properties) {
+            throw new Error('Multipart form data schema must have properties');
+        }
+
+        const fields: INodeProperties[] = [];
+        const properties = schema.properties;
+
+        for (const key in properties) {
+            const property = properties[key];
+            const resolvedProperty = this.refResolver.resolve<OpenAPIV3.SchemaObject>(property);
+            
+            const fieldPropertyKeys = this.fromSchemaProperty(key, resolvedProperty);
+            const fieldDefaults: Partial<INodeProperties> = {
+                required: schema.required?.includes(key),
+            };
+
+            const field = combine(fieldDefaults, fieldPropertyKeys);
+
+            // Handle binary file uploads
+            if (resolvedProperty.format === 'binary') {
+                field.type = 'string';
+                field.typeOptions = {
+                    ...field.typeOptions,
+                    isFilePath: true,
+                };
+                field.routing = {
+                    request: {
+                        body: {
+                            [key]: '={{ $binary[$value] }}',
+                        },
+                    },
+                };
+            } else {
+                // Handle regular form fields
+                field.routing = {
+                    request: {
+                        body: {
+                            [key]: '={{ $value }}',
+                        },
+                    },
+                };
+            }
+
+            fields.push(field);
+        }
+
         return fields;
     }
 }
