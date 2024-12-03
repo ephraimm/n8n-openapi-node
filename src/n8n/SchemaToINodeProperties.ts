@@ -223,7 +223,7 @@ export class N8NINodeProperties {
     }
 
     private fromMultipartFormData(content: OpenAPIV3.MediaTypeObject): INodeProperties[] {
-        const schema = this.refResolver.resolve<OpenAPIV3.SchemaObject>(content.schema);
+        const schema = this.refResolver.resolve<OpenAPIV3.SchemaObject>(content.schema!!);
         if (!schema.properties) {
             throw new Error('Multipart form data schema must have properties');
         }

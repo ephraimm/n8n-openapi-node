@@ -1,4 +1,4 @@
-# @devlikeapro/n8n-openapi-node
+# @ephraimm/n8n-openapi-node
 
 Turn Your **OpenAPI** (**Swagger**) spec into a **n8n node**!
 
@@ -49,14 +49,14 @@ Find more real-world examples in [Use Cases](#use-cases) section.
 
 ## Installation
 
-Add `@devlikeapro/n8n-openapi-node` as dependency
+Add `@ephraimm/n8n-openapi-node` as dependency
 
 ```bash
-npm install @devlikeapro/n8n-openapi-node
+npm install @ephraimm/n8n-openapi-node
 # OR
-pnpm add @devlikeapro/n8n-openapi-node
+pnpm add @ephraimm/n8n-openapi-node
 # OR
-yarn add @devlikeapro/n8n-openapi-node
+yarn add @ephraimm/n8n-openapi-node
 ```
 
 
@@ -69,7 +69,7 @@ yarn add @devlikeapro/n8n-openapi-node
 
 ```typescript
 import {INodeType, INodeTypeDescription} from 'n8n-workflow';
-import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@devlikeapro/n8n-openapi-node';
+import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@ephraimm/n8n-openapi-node';
 import * as doc from './openapi.json'; // <=== Your OpenAPI v3 spec
 
 const config: N8NPropertiesBuilderConfig = {}
@@ -161,7 +161,7 @@ It gets `operation.parameters` from OpenAPI spec and converts them to **Headers*
 You can override the way how to extract **Resource** from **OpenAPI Tag** defining your custom `IResourceParser`:
 
 ```typescript
-import {IResourceParser} from '@devlikeapro/n8n-openapi-node';
+import {IResourceParser} from '@ephraimm/n8n-openapi-node';
 
 export class CustomResourceParser {
   CUSTOM_DESCRIPTION = {
@@ -195,7 +195,7 @@ The default implementation you can find in [src/ResourceParser.ts](src/ResourceP
 ```typescript
 import {OpenAPIV3} from 'openapi-types';
 import * as lodash from 'lodash';
-import {DefaultResourceParser} from '@devlikeapro/n8n-openapi-node';
+import {DefaultResourceParser} from '@ephraimm/n8n-openapi-node';
 
 export class CustomResourceParser extends DefaultResourceParser {
   value(tag: OpenAPIV3.TagObject): string {
@@ -207,7 +207,7 @@ export class CustomResourceParser extends DefaultResourceParser {
 Then you use it in `N8NPropertiesBuilder` in `config.resource`:
 
 ```typescript
-import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@devlikeapro/n8n-openapi-node';
+import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@ephraimm/n8n-openapi-node';
 import * as doc from './openapi.json';
 
 import {CustomResourceParser} from './CustomResourceParser';
@@ -219,7 +219,7 @@ const parser = new N8NPropertiesBuilder(doc, config);
 const properties = parser.build()
 ```
 
-Find real example in [@devlikeapro/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
+Find real example in [@ephraimm/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
 
 ## Operation
 
@@ -227,7 +227,7 @@ You can override the way how to extract **Operation** from **OpenAPI Operation**
 `IOperationParser`:
 
 ```typescript
-import {IOperationParser} from '@devlikeapro/n8n-openapi-node';
+import {IOperationParser} from '@ephraimm/n8n-openapi-node';
 
 export class CustomOperationParser implements IOperationParser {
   shouldSkip(operation: OpenAPIV3.OperationObject, context: OperationContext): boolean {
@@ -262,7 +262,7 @@ Alternatively, you can use `DefaultOperationParser` and override only the method
 The default implementation you can find in [src/OperationParser.ts](src/OperationParser.ts)
 
 ```typescript
-import {DefaultOperationParser} from '@devlikeapro/n8n-openapi-node';
+import {DefaultOperationParser} from '@ephraimm/n8n-openapi-node';
 
 export class CustomOperationParser extends DefaultOperationParser {
   name(operation: OpenAPIV3.OperationObject, context: OperationContext): string {
@@ -279,7 +279,7 @@ export class CustomOperationParser extends DefaultOperationParser {
 Then you use it in `N8NPropertiesBuilder` in `config.operation`:
 
 ```typescript
-import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@devlikeapro/n8n-openapi-node';
+import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@ephraimm/n8n-openapi-node';
 import * as doc from './openapi.json';
 import {CustomOperationParser} from './CustomOperationParser';
 
@@ -290,7 +290,7 @@ const parser = new N8NPropertiesBuilder(doc, config);
 const properties = parser.build()
 ```
 
-Find real example in [@devlikeapro/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
+Find real example in [@ephraimm/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
 
 ## Fields
 
@@ -300,7 +300,7 @@ Here's example how you can override `session` field value (which has `'default'`
 suitable `=${$json.session}}`:
 
 ```typescript
-import {Override} from '@devlikeapro/n8n-openapi-node';
+import {Override} from '@ephraimm/n8n-openapi-node';
 
 export const customDefaults: Override[] = [
   {
@@ -322,7 +322,7 @@ Then you use it in `N8NPropertiesBuilder`:
 
 ```typescript
 
-import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@devlikeapro/n8n-openapi-node';
+import {N8NPropertiesBuilder, N8NPropertiesBuilderConfig} from '@ephraimm/n8n-openapi-node';
 import * as doc from './openapi.json';
 import {customDefaults} from './customDefaults';
 
@@ -330,19 +330,19 @@ const parser = new N8NPropertiesBuilder(doc);
 const properties = parser.build(customDefaults);
 ```
 
-Find real example in [@devlikeapro/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
+Find real example in [@ephraimm/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) repository.
 
 # Use Cases
 
 Here's n8n community nodes generated from OpenAPI specifications you can use for reference:
 
-- [@devlikeapro/n8n-nodes-petstore](https://github.com/devlikeapro/n8n-nodes-petstore) - Petstore example generated from
+- [@ephraimm/n8n-nodes-petstore](https://github.com/devlikeapro/n8n-nodes-petstore) - Petstore example generated from
   [Petstore openapi.json](https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.0/petstore.yaml)
-- [@devlikeapro/n8n-nodes-chatwoot](https://github.com/devlikeapro/n8n-nodes-chatwoot) - ChatWoot n8n community node
+- [@ephraimm/n8n-nodes-chatwoot](https://github.com/devlikeapro/n8n-nodes-chatwoot) - ChatWoot n8n community node
   from
   [https://www.chatwoot.com/developers/api/](https://www.chatwoot.com/developers/api/). Defines credentials as well (
   manually)
-- [@devlikeapro/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) - **WAHA** - Self-hosted **WhatsApp HTTP
+- [@ephraimm/n8n-nodes-waha](https://github.com/devlikeapro/n8n-nodes-waha) - **WAHA** - Self-hosted **WhatsApp HTTP
   API** you can run in a click!
 
 # FAQ
